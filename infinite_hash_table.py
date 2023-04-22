@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Generic, TypeVar
 
-from data_structures.referential_array import ArrayR, T
+from data_structures.referential_array import ArrayR
 
 K = TypeVar("K")
 V = TypeVar("V")
@@ -22,9 +22,7 @@ class InfiniteHashTable(Generic[K, V]):
 
     def __init__(self) -> None:
         self.level = 0
-        self.table = ArrayR[T](self.TABLE_SIZE)
-        for i in range(self.TABLE_SIZE):
-            self.table[i] = ArrayR[T](self.TABLE_SIZE)
+        self.table = ArrayR(self.TABLE_SIZE)
 
     def hash(self, key: K) -> int:
         if self.level < len(key):
@@ -37,13 +35,15 @@ class InfiniteHashTable(Generic[K, V]):
 
         :raises KeyError: when the key doesn't exist.
         """
-        raise NotImplementedError()
+        pos = self.get_location(key)
+        return self.table[pos[-1]]
 
     def __setitem__(self, key: K, value: V) -> None:
         """
         Set an (key, value) pair in our hash table.
         """
-        raise NotImplementedError()
+        pos = self.get_location(key)
+        self.table[pos[-1]] = value
 
     def __delitem__(self, key: K) -> None:
         """
@@ -51,10 +51,11 @@ class InfiniteHashTable(Generic[K, V]):
 
         :raises KeyError: when the key doesn't exist.
         """
-        raise NotImplementedError()
+        pos = self.get_location(key)
+        self.table[pos[-1]] = None
 
     def __len__(self):
-        raise NotImplementedError()
+        return len(self.table)
 
     def __str__(self) -> str:
         """
@@ -70,7 +71,21 @@ class InfiniteHashTable(Generic[K, V]):
 
         :raises KeyError: when the key doesn't exist.
         """
-        raise NotImplementedError()
+        pos = []
+        while True:
+            h = self.hash(key)
+            if self.table[h] is None:
+                raise KeyError(key)
+            elif self.level == len(key) and isinstance(self.table[h], tuple) and self.table[h][0] == key:
+                pos.append(h)
+                break
+            elif self.level < len(key) and isinstance(self.table[h], InfiniteHashTable):
+                pos.append(h)
+                self = self.table[h]
+                self.level += 1
+            else:
+                raise KeyError(key)
+        return pos
 
     def __contains__(self, key: K) -> bool:
         """
