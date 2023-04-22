@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Generic, TypeVar
 
-from data_structures.referential_array import ArrayR
+from data_structures.referential_array import ArrayR, T
 
 K = TypeVar("K")
 V = TypeVar("V")
@@ -21,7 +21,10 @@ class InfiniteHashTable(Generic[K, V]):
     TABLE_SIZE = 27
 
     def __init__(self) -> None:
-        raise NotImplementedError()
+        self.level = 0
+        self.table = ArrayR[T](self.TABLE_SIZE)
+        for i in range(self.TABLE_SIZE):
+            self.table[i] = ArrayR[T](self.TABLE_SIZE)
 
     def hash(self, key: K) -> int:
         if self.level < len(key):
