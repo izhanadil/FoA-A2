@@ -75,7 +75,20 @@ class Trail:
 
     def follow_path(self, personality: WalkerPersonality) -> None:
         """Follow a path and add mountains according to a personality."""
-        raise NotImplementedError()
+        stack = [(self.store, False)]
+        while stack:
+            current, has_visited_branch = stack.pop()
+            if isinstance(current, TrailSeries):
+                personality.add_mountain(current.mountain)
+                stack.append((current.following.store, False))
+            elif isinstance(current, TrailSplit):
+                if not has_visited_branch:
+                    stack.append((current, True))
+                    selected_path = current.path_top if personality.select_branch(current.path_top,
+                                                                                  current.path_bottom) else current.path_bottom
+                    stack.append((selected_path.store, False))
+                else:
+                    stack.append((current.path_follow.store, False))
 
     def collect_all_mountains(self) -> list[Mountain]:
         """Returns a list of all mountains on the trail."""
