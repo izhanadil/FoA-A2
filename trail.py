@@ -75,6 +75,7 @@ class Trail:
 
     def follow_path(self, personality: WalkerPersonality) -> None:
         """Follow a path and add mountains according to a personality."""
+
         stack = [(self.store, False)]
         while stack:
             current, has_visited_branch = stack.pop()
