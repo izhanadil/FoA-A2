@@ -709,10 +709,10 @@ class DoubleKeyTable(Generic[K1, K2, V]):
         result = "\n".join(f"({key}, {value})" for key, value in self.array if key is not None)
         return result
 
-    def _iter_(self):
+    def __iter__(self):
         return self
 
-    def _next_(self) -> K1 | V:
+    def __next__(self) -> K1 | V:
         if self.iter_num == 0:
             if self.curr_key is not None:
                 self.iter_num += 1
