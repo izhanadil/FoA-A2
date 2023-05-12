@@ -1,60 +1,3 @@
-# from mountain import Mountain
-
-# class MountainManager:
-
-#     def __init__(self) -> None:
-#         pass
-
-#     def add_mountain(self, mountain: Mountain):
-#         raise NotImplementedError()
-
-#     def remove_mountain(self, mountain: Mountain):
-#         raise NotImplementedError()
-
-#     def edit_mountain(self, old: Mountain, new: Mountain):
-#         raise NotImplementedError()
-
-#     def mountains_with_difficulty(self, diff: int):
-#         raise NotImplementedError()
-
-#     def group_by_difficulty(self):
-#         raise NotImplementedError()
-
-
-# from mountain import Mountain
-# from typing import List
-
-# class MountainManager:
-
-#     def __init__(self) -> None:
-#         self._mountains = []
-#         self._mountain_difficulties = {}
-
-#     def add_mountain(self, mountain: Mountain) -> None:
-#         self._mountains.append(mountain)
-#         if mountain.difficulty_level in self._mountain_difficulties:
-#             self._mountain_difficulties[mountain.difficulty_level].append(mountain)
-#         else:
-#             self._mountain_difficulties[mountain.difficulty_level] = [mountain]
-
-#     def remove_mountain(self, mountain: Mountain) -> None:
-#         self._mountains.remove(mountain)
-#         self._mountain_difficulties[mountain.difficulty].remove(mountain)
-
-#     def edit_mountain(self, old_mountain: Mountain, new_mountain: Mountain) -> None:
-#         self.remove_mountain(old_mountain)
-#         self.add_mountain(new_mountain)
-
-#     def mountains_with_difficulty(self, diff: int) -> List[Mountain]:
-#         return self._mountain_difficulties.get(diff, [])
-
-#     def group_by_difficulty(self) -> List[List[Mountain]]:
-#         groups = []
-#         for diff in sorted(self._mountain_difficulties.keys()):
-#             groups.append(self._mountain_difficulties[diff])
-#         return groups
-
-
 from mountain import Mountain
 from itertools import groupby
 
@@ -98,4 +41,40 @@ class MountainManager:
             # group the mountains based on their difficulty level
             grouped_mountains.append(list(group))
         return grouped_mountains
+
+
+# from mountain import Mountain
+# from typing import List
+
+# class MountainManager:
+
+#     def __init__(self) -> None:
+#         self._mountains = []
+#         self._mountain_difficulties = {}
+
+#     def add_mountain(self, mountain: Mountain) -> None:
+#         self._mountains.append(mountain)
+#         if mountain.difficulty_level in self._mountain_difficulties:
+#             self._mountain_difficulties[mountain.difficulty_level].append(mountain)
+#         else:
+#             self._mountain_difficulties[mountain.difficulty_level] = [mountain]
+
+#     def remove_mountain(self, mountain: Mountain) -> None:
+#         self._mountains.remove(mountain)
+#         self._mountain_difficulties[mountain.difficulty].remove(mountain)
+
+#     def edit_mountain(self, old_mountain: Mountain, new_mountain: Mountain) -> None:
+#         self.remove_mountain(old_mountain)
+#         self.add_mountain(new_mountain)
+
+#     def mountains_with_difficulty(self, diff: int) -> List[Mountain]:
+#         return self._mountain_difficulties.get(diff, [])
+
+#     def group_by_difficulty(self) -> List[List[Mountain]]:
+#         groups = []
+#         for diff in sorted(self._mountain_difficulties.keys()):
+#             groups.append(self._mountain_difficulties[diff])
+#         return groups
+
+
 
