@@ -61,7 +61,7 @@ from itertools import groupby
 
 class MountainManager:
 
-    def _init_(self) -> None:
+    def __init__(self) -> None:
         self.manager = []
 
     def add_mountain(self, mountain: Mountain):
@@ -76,18 +76,20 @@ class MountainManager:
         
 
     def mountains_with_difficulty(self, diff: int):
-        mountains_with_diff = [mountain for mountain in self.manager if mountain.difficulty_level == diff]
+        mountains_with_diff = [mountain for mountain in self.manager 
+                               if mountain.difficulty_level == diff]
         return mountains_with_diff
 
 
     def group_by_difficulty(self):
         """
-        The time complexity of the group_by_difficulty method depends on the size of our manager list, which contains all the mountain 
-        objects. Sorting of manager  takes O(nlogn) time complexity, where n is the length of the manager list. 
-        Then, the method since we used the groupby function from the itertools  module to group the mountains based on their difficulty_level. 
-        groupby function takes O(n) time complexity for an input iterable of length n. Finally, the method appends each group of mountains 
-        to a new list grouped_mountains, which takes O(1) time complexity.
-        Therefore, the overall time complexity of the group_by_difficulty method is O(nlogn) because of the sorting operation.
+        Returns a list of mountain groups, where each group contains mountains with the same difficulty level.
+        
+        The time complexity of this method is O(nlogn) because of the sorting operation on the list of mountains. The method 
+        first sorts the list by difficulty level, which takes O(nlogn) time complexity, where n is the length of the manager list. 
+        Then, it groups the mountains based on their difficulty level using the groupby function from the itertools module. The groupby 
+        function takes O(n) time complexity for an input iterable of length n. Finally, the method appends each group of mountains 
+        to a new list, which takes O(1) time complexity.
         """
       
         self.manager.sort(key=lambda x: x.difficulty_level)  # sort the list by difficulty level
@@ -96,3 +98,4 @@ class MountainManager:
             # group the mountains based on their difficulty level
             grouped_mountains.append(list(group))
         return grouped_mountains
+

@@ -223,34 +223,27 @@ class InfiniteHashTable(Generic[K, V]):
 
     def __getitem__(self, key: K) -> V:
         loc = self.get_location(key)
-        if loc[-1] < self.TABLE_SIZE - 1:
-            return self.table[loc[-1]][loc[-2]]
+        if loc[1] < self.TABLE_SIZE - 1:
+            return self.table[loc[0]][loc[1]]
         raise KeyError
 
     def __setitem__(self, key: K, value: V) -> None:
         loc = self.get_location(key)
-        while len(self.table) <= loc[-1]:
-            self.table.append(None)
-        if loc[-1] < self.TABLE_SIZE - 1:
-            if self.table[loc[-1]] is None:
-                self.table[loc[-1]] = ArrayR(self.TABLE_SIZE)
-            self.table[loc[-1]][loc[-2]] = value
+        if loc[1] < self.TABLE_SIZE - 1:
+            self.table[loc[0]][loc[1]] = value
         else:
             new_table = InfiniteHashTable()
             new_table.level = self.level + 1
             new_table.__setitem__(key, value)
-            if self.table[-1] is None:
-                self.table[-1] = new_table
-            else:
-                self.table.append(new_table)
+            self.table[self.TABLE_SIZE-1] = new_table
         self.size += 1
 
     def __delitem__(self, key: K) -> None:
         loc = self.get_location(key)
-        if loc[-1] == self.TABLE_SIZE - 1:
+        if loc[1] == self.TABLE_SIZE - 1:
             raise KeyError
 
-        del self.table[loc[-1]][loc[-2]]
+        del self.table[loc[0]][loc[1]]
         self.size -= 1
 
         while len(self.table) == 1 and isinstance(self.table[0], InfiniteHashTable):
@@ -269,16 +262,14 @@ class InfiniteHashTable(Generic[K, V]):
         location = []
         while True:
             location.append(current_table.hash(key))
-            if location[-1] < current_table.TABLE_SIZE - 1:
+            if location[1] < current_table.TABLE_SIZE - 1:
                 break
-            if current_table.table[-1] is None:
-                current_table.table[-1] = InfiniteHashTable()
-            current_table = current_table.table[-1]
+            current_table = current_table.table[current_table.TABLE_SIZE - 1]
         return location
 
     def __iter__(self):
         for i in range(self.TABLE_SIZE - 1):
-            if i < len(self.table) and self.table[i] is not None:
+            if i < len(self.table):
                 if isinstance(self.table[i], V):
                     yield self.table[i]
                 elif isinstance(self.table[i], InfiniteHashTable):
