@@ -123,3 +123,5 @@ class TestDoubleHash(unittest.TestCase):
         # with an iterator.
         self.assertRaises(BaseException, lambda: next(key_iterator))
         self.assertRaises(BaseException, lambda: next(value_iterator))
+
+

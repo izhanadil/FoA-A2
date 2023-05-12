@@ -13,10 +13,10 @@ if TYPE_CHECKING:
 class TrailSplit:
     """
     A split in the trail.
-       ___path_top____
+       __path_top___
       /               \
     -<                 >-path_follow-
-      \__path_bottom__/
+      \_path_bottom_/
     """
 
     path_top: Trail
@@ -78,32 +78,80 @@ class Trail:
 
         stack = [(self.store, False)]
         while stack:
-            current, has_visited_branch = stack.pop()
+            current, has_came_branch = stack.pop()
             if isinstance(current, TrailSeries):
                 personality.add_mountain(current.mountain)
                 stack.append((current.following.store, False))
             elif isinstance(current, TrailSplit):
-                if not has_visited_branch:
+                if not has_came_branch:
                     stack.append((current, True))
-                    selected_path = current.path_top if personality.select_branch(current.path_top,
-                                                                                  current.path_bottom) else current.path_bottom
+                    selected_path = current.path_top if personality.select_branch(current.path_top, current.path_bottom) \
+                        else current.path_bottom
                     stack.append((selected_path.store, False))
                 else:
                     stack.append((current.path_follow.store, False))
 
     def collect_all_mountains(self) -> list[Mountain]:
         """Returns a list of all mountains on the trail."""
-        raise NotImplementedError()
+        all_mounts = []
 
-    def length_k_paths(self, k) -> list[list[Mountain]]: # Input to this should not exceed k > 50, at most 5 branches.
+        if self.store is not None:
+            if isinstance(self.store, TrailSeries):
+                if self.store.mountain is not None:
+                    all_mounts.append(self.store.mountain)
+                all_mounts += self.store.following.collect_all_mountains()
+            elif isinstance(self.store, TrailSplit):
+                all_mounts += self.store.path_top.collect_all_mountains()
+                all_mounts += self.store.path_bottom.collect_all_mountains()
+                all_mounts += self.store.path_follow.collect_all_mountains()
+        return all_mounts
+
+    def length_k_paths(self, k) -> list[list[Mountain]]:  # Input to this should not exceed k > 50, at most 5 branches.
         """
         Returns a list of all paths of containing exactly k mountains.
         Paths are represented as lists of mountains.
 
         Paths are unique if they take a different branch, even if this results in the same set of mountains.
         """
-        raise NotImplementedError()
-# from __future__ import annotations
+        self.mountain_sets = []
+        k_mountains = []
+        self.mountain_on_each(self, self.store.path_top, [])
+        self.mountain_on_each(self, self.store.path_bottom, [])
+
+        i = 0
+        while i < len(self.mountain_sets):
+            mountains = self.mountain_sets[i]
+            mountains.append(self.store.path_follow.store.mountain)
+            if len(mountains) == k:
+                k_mountains.append(mountains)
+            i += 1
+
+        return k_mountains
+
+
+
+    def mountain_on_each(self, current: Trail, next: Trail, until):
+        if current.store is not None and isinstance(current.store, TrailSeries) and current.store.mountain is not None:
+            until = until + [current.store.mountain]
+        current_t = next
+        if current_t.store is None:
+            self.mountain_sets.append(until)
+        else:
+            store = current_t.store
+            if isinstance(store, TrailSeries):
+                self.mountain_on_each(current_t, store.following, until)
+            elif isinstance(store, TrailSplit):
+                store_bran = [
+                    (store.path_top, store.path_follow),
+                    (store.path_bottom, store.path_follow)]
+                for i, branch in enumerate(store_bran):
+                    if i == 0:
+                        self.mountain_on_each(branch[0], branch[1], until)
+                    else:
+                        self.mountain_on_each(branch[0], branch[1], until)
+
+                        
+# from _future_ import annotations
 # from dataclasses import dataclass
 
 # from mountain import Mountain
@@ -118,10 +166,10 @@ class Trail:
 # class TrailSplit:
 #     """
 #     A split in the trail.
-#        __path_top___
+#        _path_top__
 #       /               \
 #     -<                 >-path_follow-
-#       \_path_bottom_/
+#       \path_bottom/
 #     """
 
 #     path_top: Trail
